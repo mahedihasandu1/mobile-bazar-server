@@ -113,7 +113,7 @@ async function run() {
             const result = await usersCollection.updateOne(query, updateDoc, options);
             res.send(result)
         });
-        // product
+        product
 
         app.post('/products', async (req, res) => {
             const products = req.body;
@@ -122,7 +122,7 @@ async function run() {
         });
         
         app.get('/products', async (req, res) => {
-            // let query = {};
+            let query = {};
             if (req.query.id) {
                 query = { categoryId: req.query?.id }
             }
