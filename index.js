@@ -113,7 +113,7 @@ async function run() {
             const result = await usersCollection.updateOne(query, updateDoc, options);
             res.send(result)
         });
-        product
+        // product
 
         app.post('/products', async (req, res) => {
             const products = req.body;
