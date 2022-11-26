@@ -122,7 +122,7 @@ async function run() {
         });
         
         app.get('/products', async (req, res) => {
-            let query = {};
+            // let query = {};
             if (req.query.id) {
                 query = { categoryId: req.query?.id }
             }
@@ -159,7 +159,6 @@ async function run() {
             const result=await adsCollection.insertOne(data);
             res.send(result)
         })
-
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
@@ -171,7 +170,6 @@ async function run() {
             res.status(403).send({ accessToken: '' })
         });
     }
-
     finally {
 
     }
