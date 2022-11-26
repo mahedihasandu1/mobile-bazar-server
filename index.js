@@ -44,6 +44,7 @@ async function run() {
         const categoryCollection = client.db('mobileBazar').collection('category')
         const usersCollection = client.db('mobileBazar').collection('users')
         const productsCollection = client.db('mobileBazar').collection('allProducts')
+        const adsCollection = client.db('mobileBazar').collection('adsData')
 
 
 
@@ -58,7 +59,7 @@ async function run() {
             next()
         }
 
-
+        // category
 
         app.get('/category', async (req, res) => {
             const query = {};
@@ -87,6 +88,8 @@ async function run() {
             console.log(result)
             res.send(result)
         });
+
+        // user
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
@@ -110,8 +113,9 @@ async function run() {
             const result = await usersCollection.updateOne(query, updateDoc, options);
             res.send(result)
         });
-        app.post('/products', async (req, res) => {
+        // product
 
+        app.post('/products', async (req, res) => {
             const products = req.body;
             const result = await productsCollection.insertOne(products);
             res.send(result)
@@ -134,6 +138,28 @@ async function run() {
             const result = await productsCollection.deleteOne(query);
             res.send(result)
         });
+
+
+        // adsCollection
+        app.get('/adsProducts',async(req,res)=>{
+            const query={}
+            const result=await adsCollection.find(query).toArray();
+            res.send(result)
+        });
+        app.post('/adsProducts',async(req,res)=>{
+            const data=req.body;
+            const query = {
+                uniqId:data.uniqId
+            }
+            const alreadyBooked = await adsCollection.find(query).toArray();
+            if (alreadyBooked.length) {
+                const message = `Your Advertisement Already Set `
+                return res.send({ acknowledged: false, message })
+            }
+            const result=await adsCollection.insertOne(data);
+            res.send(result)
+        })
+
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
