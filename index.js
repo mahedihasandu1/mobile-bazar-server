@@ -79,7 +79,7 @@ async function run() {
             const result = await categoryCollection.findOne(query)
             res.send(result)
         });
-        app.get('/users', async (req, res) => {
+        app.get('/users',  async (req, res) => {
             let query = {}
             if (req.query.userType) {
                 query = { userType: req.query.userType }
@@ -97,7 +97,7 @@ async function run() {
         });
 
 
-        app.delete('/dashboard/users/:id', async (req, res) => {
+        app.delete('/dashboard/users/:id', verifyJWT,verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await usersCollection.deleteOne(query);
@@ -111,7 +111,7 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result)
         });
-        app.delete('/users/:id', async (req, res) => {
+        app.delete('/users/:id',verifyJWT,verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
@@ -119,7 +119,7 @@ async function run() {
         });
 
 
-        app.put('/users/:id', async (req, res) => {
+        app.put('/users/:id', verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const options = { upsert: true };
@@ -131,13 +131,13 @@ async function run() {
         });
         // product
 
-        app.post('/products', async (req, res) => {
+        app.post('/products',verifySeller, async (req, res) => {
             const products = req.body;
             const result = await productsCollection.insertOne(products);
             res.send(result)
         });
 
-        app.get('/products', async (req, res) => {
+        app.get('/products',verifyJWT, async (req, res) => {
             let query = {};
             if (req.query.id) {
                 query = { categoryId: req.query?.id }
@@ -148,7 +148,7 @@ async function run() {
             const result = await productsCollection.find(query).toArray()
             res.send(result)
         });
-        app.delete('/products/:id', async (req, res) => {
+        app.delete('/products/:id',verifySeller,verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await productsCollection.deleteOne(query);
@@ -171,13 +171,13 @@ async function run() {
             const result = await adsCollection.find(query).toArray();
             res.send(result)
         });
-        app.delete('/adsProducts', async (req, res) => {
+        app.delete('/adsProducts',verifySeller,verifyAdmin, async (req, res) => {
             const id = req.query.id;
             const query = { uniqId: id }
             const result = await adsCollection.deleteOne(query);
             res.send(result)
         })
-        app.post('/adsProducts', async (req, res) => {
+        app.post('/adsProducts',verifySeller, async (req, res) => {
             const data = req.body;
             const query = {
                 uniqId: data.uniqId
@@ -190,7 +190,7 @@ async function run() {
             const result = await adsCollection.insertOne(data);
             res.send(result)
         });
-        app.post('/bookedProduct', async (req, res) => {
+        app.post('/bookedProduct', verifyJWT,async (req, res) => {
             const data = req.body;
             query = {
                 productId: data.productId,
@@ -204,13 +204,13 @@ async function run() {
             const result = await bookingCollection.insertOne(data);
             res.send(result)
         });
-        app.get('/bookedProduct', async (req, res) => {
+        app.get('/bookedProduct',verifyJWT, async (req, res) => {
             const email = req.query.userEmail
             const query = { userEmail: email }
             const result = await bookingCollection.find(query).toArray()
             res.send(result)
         });
-        app.delete('/bookedProduct', async (req, res) => {
+        app.delete('/bookedProduct',verifyJWT, async (req, res) => {
             const id = req.query.id
             const query = { _id: ObjectId(id) }
             const result = await bookingCollection.deleteOne(query)
