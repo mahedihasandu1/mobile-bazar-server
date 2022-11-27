@@ -5,9 +5,6 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-
-
-
 const app = express();
 
 // middleware
@@ -16,7 +13,6 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.3dm7fqv.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-
 
 // varifytokenjtw
 function verifyJWT(req, res, next) {
@@ -205,7 +201,25 @@ async function run() {
             const result =await bookingCollection.find(query).toArray()
             res.send(result)
         });
+        app.delete('/bookedProduct',async(req,res)=>{
+            const id=req.query.id
+            const query={_id:ObjectId(id)}
+            const result =await bookingCollection.deleteOne(query)
+            res.send(result)
+        });
 
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isAdmin: user?.role == 'Admin' })
+        });
+        app.get('/users/seller/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ seller: user?.userType == 'Seller' })
+        });
 
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
