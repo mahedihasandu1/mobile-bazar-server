@@ -88,6 +88,23 @@ async function run() {
             const result = await usersCollection.find(query).toArray()
             res.send(result)
         });
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isAdmin: user?.role == 'Admin' })
+        });
+        app.put('/users/admin/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: { status: 'verify' }
+            }
+            const result = await usersCollection.updateOne(query, updateDoc, options);
+            res.send(result)
+        });
+
         app.get('/user', async (req, res) => {
             let query = {}
             if (req.query.email) {
@@ -96,7 +113,7 @@ async function run() {
             const result = await usersCollection.findOne(query)
             res.send(result)
         });
-        app.delete('/dashboard/users/:id', verifyJWT, verifyAdmin, async (req, res) => {
+        app.delete('/dashboard/users/:id', verifyJWT,verifyAdmin,  async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await usersCollection.deleteOne(query);
@@ -115,19 +132,19 @@ async function run() {
             const result = await usersCollection.deleteOne(query);
             res.send(result)
         });
-        app.put('/users/:id', verifyAdmin, async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: { status: 'verify' }
-            }
-            const result = await usersCollection.updateOne(query, updateDoc, options);
-            res.send(result)
-        });
+        // app.put('/users/:id', verifyJWT,verifyAdmin, async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id) };
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //         $set: { status: 'verify' }
+        //     }
+        //     const result = await usersCollection.updateOne(query, updateDoc, options);
+        //     res.send(result)
+        // });
         // product
 
-        app.post('/products',verifyJWT, verifySeller, async (req, res) => {
+        app.post('/products',verifyJWT, verifySeller,async (req, res) => {
             const products = req.body;
             const result = await productsCollection.insertOne(products);
             res.send(result)
@@ -143,7 +160,7 @@ async function run() {
             const result = await productsCollection.find(query).toArray()
             res.send(result)
         });
-        app.delete('/products/:id', async (req, res) => {
+        app.delete('/products/:id',async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await productsCollection.deleteOne(query);
@@ -160,7 +177,7 @@ async function run() {
             res.send(result)
         })
         // adsCollection
-        app.get('/adsProducts', async (req, res) => {
+        app.get('/adsProducts',async (req, res) => {
             const query={}
             const result = await adsCollection.find(query).toArray();
             res.send(result)
@@ -189,7 +206,7 @@ async function run() {
             const data = req.body;
             query = {
                 productId: data.productId,
-                userEmail: data.userEmail,
+                userEmail:data.userEmail,
             }
             const alreadyBooked = await bookingCollection.find(query).toArray();
             if (alreadyBooked.length) {
@@ -267,6 +284,7 @@ async function run() {
             const data = req.body;
             query = {
                 productId: data.productId,
+                reporteremail:data.reporteremail
             }
             const alreadyBooked = await reportCollection.find(query).toArray();
             if (alreadyBooked.length) {
