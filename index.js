@@ -104,6 +104,12 @@ async function run() {
             const result = await usersCollection.updateOne(query, updateDoc, options);
             res.send(result)
         });
+        app.get('/users/seller/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ seller: user?.userType == 'Seller' })
+        });
 
         app.get('/user', async (req, res) => {
             let query = {}
@@ -132,18 +138,7 @@ async function run() {
             const result = await usersCollection.deleteOne(query);
             res.send(result)
         });
-        // app.put('/users/:id', verifyJWT,verifyAdmin, async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const options = { upsert: true };
-        //     const updateDoc = {
-        //         $set: { status: 'verify' }
-        //     }
-        //     const result = await usersCollection.updateOne(query, updateDoc, options);
-        //     res.send(result)
-        // });
-        // product
-
+      
         app.post('/products',verifyJWT, verifySeller,async (req, res) => {
             const products = req.body;
             const result = await productsCollection.insertOne(products);
