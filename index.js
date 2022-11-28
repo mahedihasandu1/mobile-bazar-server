@@ -279,7 +279,7 @@ async function run() {
             const data = req.body;
             query = {
                 productId: data.productId,
-                reporteremail:data.reporteremail
+                reportEmail:data.reportEmail
             }
             const alreadyBooked = await reportCollection.find(query).toArray();
             if (alreadyBooked.length) {
